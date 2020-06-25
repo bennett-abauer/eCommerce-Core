@@ -246,6 +246,17 @@ namespace DPLRef.eCommerce.Managers.Catalog
             }
         }
 
+        void Admin.IAdminCatalogManager.RebuildCatalog(int catalogId)
+        {
+            try
+            {
+                AccessorFactory.CreateAccessor<ISearchAccessor>().RebuildIndex(catalogId);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
         #endregion
 
         #region IWebStoreCatalogManager
@@ -337,6 +348,37 @@ namespace DPLRef.eCommerce.Managers.Catalog
             }
         }
 
+        WebStore.WebStoreSearchResponse WebStore.IWebStoreCatalogManager.Search(int catalogId, string query)
+        {
+            try
+            {
+                var products = AccessorFactory.CreateAccessor<ISearchAccessor>().Search(catalogId, query);
+                var list = new List<WebStore.ProductSearchItem>();
+
+                foreach (var product in products)
+                {
+                    var searchProduct = new WebStore.ProductSearchItem()
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Price = product.Price
+                    };
+                    list.Add(searchProduct);
+                }
+
+                return new WebStore.WebStoreSearchResponse()
+                {
+                    Success = true,
+                    Products = list.ToArray(),
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+
+                return new WebStore.WebStoreSearchResponse() { Success = false };
+            }
+        }
         #endregion
 
         #region IServiceContractBase
