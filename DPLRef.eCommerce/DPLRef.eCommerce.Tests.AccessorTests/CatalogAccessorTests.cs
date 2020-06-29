@@ -282,7 +282,45 @@ namespace DPLRef.eCommerce.Tests.AccessorTests
             var accessor = CreateCatalogAccessor();
             accessor.SaveProduct(-1, saved);
         }
-
         #endregion
+
+        [TestMethod]
+        [TestCategory("Accessor Tests")]
+        public void CatalogAccessor_Product_AllProductsInRange()
+        {
+            var accessor = CreateCatalogAccessor();
+            var result = accessor.AllProductsInRange(10.00m, 1000.00m);
+            Assert.IsTrue(result.Length > 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Accessor Tests")]
+        public void CatalogAccessor_Product_AllProductsFromSupplier()
+        {
+            var accessor = CreateCatalogAccessor();
+            var result = accessor.AllProductsFromSupplier("Russ");
+            Assert.IsTrue(result.Length > 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Accessor Tests")]
+        public void CatalogAccessor_Product_ProductsBySupplier()
+        {
+            var catalog = CreateCatalogAccessor();
+            var result = catalog.ProductsBySupplier();
+            Assert.IsTrue(result.Length > 1);
+        }
+
+        [TestMethod]
+        [TestCategory("Accessor Tests")]
+        public void CatalogAccessor_Product_UpdatePrice()
+        {
+            var catalog = CreateCatalogAccessor();
+            var oldPrice = catalog.FindProduct(15).Price;
+            catalog.UpdatePrice(15, 100000.00m);
+            Assert.AreEqual(catalog.FindProduct(15).Price, 100000.00m);
+            catalog.UpdatePrice(15, oldPrice);
+            Assert.AreEqual(catalog.FindProduct(15).Price, oldPrice);
+        }
     }
 }
